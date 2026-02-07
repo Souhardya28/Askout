@@ -1,243 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Be My Valentine 💖</title>
+  <meta charset="UTF-8">
+  <title>Valentine's Proposal 💘</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    * { box-sizing: border-box; }
-
     body {
       margin: 0;
       height: 100vh;
-      font-family: 'Comic Sans MS', cursive;
-      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-      overflow: hidden;
+      background: radial-gradient(circle, #ffafbd, #ffc3a0);
       display: flex;
       align-items: center;
       justify-content: center;
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
     }
 
     .card {
       background: white;
-      padding: 40px 30px;
-      border-radius: 24px;
+      padding: 30px 25px;
+      border-radius: 20px;
       text-align: center;
-      width: 500px;          /* PC width */
-      max-width: 90%;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.25);
-      z-index: 10;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+      width: 90%;
+      max-width: 350px;
     }
 
-    h1 { 
-      color: #ff4d6d; 
-      font-size: 28px;
+    h1 {
+      color: #ff4d6d;
+      margin-bottom: 10px;
     }
 
     p {
-      font-size: 18px;
+      margin-bottom: 25px;
+      font-size: 16px;
     }
 
     .buttons {
-      margin-top: 35px;
       position: relative;
-      height: 220px;        /* MORE ROOM FOR NO */
+      height: 120px;
     }
 
     button {
+      padding: 14px 28px;
+      font-size: 18px;
       border: none;
-      border-radius: 40px;
+      border-radius: 50px;
       cursor: pointer;
       position: absolute;
-      font-size: 18px;
-      user-select: none;
     }
 
-    /* YES button */
     #yes {
-      padding: 16px 40px;
+      left: 50%;
+      transform: translateX(-50%);
       background: #ff4d6d;
       color: white;
-      left: 50%;
-      bottom: 30px;
-      transform: translateX(-50%) scale(1);
-      transition: transform 0.25s ease, box-shadow 0.15s ease;
+      --scale: 1;
     }
 
     #yes.glow {
       box-shadow:
-        0 0 18px #ff4d6d,
-        0 0 35px #ff4d6d,
-        0 0 60px #ff99aa;
+        0 0 15px #ff4d6d,
+        0 0 30px #ff4d6d,
+        0 0 50px #ff99aa;
+      transform: translateX(-50%) scale(var(--scale));
     }
 
-    /* NO button */
     #no {
-      width: 110px;
-      height: 48px;
-      background: #ddd;
-      right: 30px;
-      bottom: 30px;
-      line-height: 48px;
-      padding: 0;
-      transition: left 0.15s ease, top 0.15s ease;
-    }
-
-    .message {
-      margin-top: 25px;
-      font-size: 20px;
-      min-height: 24px;
-    }
-
-    /* Fireworks */
-    .firework {
-      position: fixed;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      animation: explode 1s ease-out forwards;
-    }
-
-    @keyframes explode {
-      from { transform: scale(0); opacity: 1; }
-      to { transform: scale(1.8); opacity: 0; }
-    }
-
-    /* Slight scale-up on hover (PC feel) */
-    #yes:hover {
-      transform: translateX(-50%) scale(1.05);
+      background: #ccc;
+      color: #333;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
     }
   </style>
 </head>
 
 <body>
 
-<audio id="music" loop>
-  <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mpeg">
-</audio>
-
 <div class="card">
-  <h1>Hey Sanchita 💕</h1>
-  <p>Will you be my Valentine? 💘</p>
+  <h1>Hey ❤️</h1>
+  <p>Will you be my Valentine? 💐<br>
+     (Think very carefully 😈)</p>
 
-  <div class="buttons">
-    <button id="yes">Yes 💖</button>
-    <button id="no">No 😢</button>
+  <div class="buttons" id="buttons">
+    <button id="yes">YES 💖</button>
+    <button id="no">NO 🙄</button>
   </div>
-
-  <div class="message" id="message"></div>
 </div>
 
 <script>
-  const noBtn = document.getElementById("no");
   const yesBtn = document.getElementById("yes");
-  const msg = document.getElementById("message");
-  const buttons = document.querySelector(".buttons");
-  const music = document.getElementById("music");
+  const noBtn = document.getElementById("no");
+  const buttons = document.getElementById("buttons");
 
-  const messages = [
-    "Are you sure? 🥺",
-    "Heyyy stop 😭",
-    "My heart 💔",
-    "Nice try 😏",
-    "You can’t escape 😈",
-    "JUST SAY YES 😤"
-  ];
-
-  let count = 0;
   let yesScale = 1;
-  let musicStarted = false;
+  let noClicks = 0;
 
-  /* 💓 Heartbeat glow (PC-safe) */
+  // 📱 Safe vibration helper
+  function vibrate(ms) {
+    if (navigator.vibrate) {
+      navigator.vibrate(ms);
+    }
+  }
+
+  // 💓 Heartbeat synced EXACTLY with glow
   function heartbeat() {
     yesBtn.classList.add("glow");
-    setTimeout(() => yesBtn.classList.remove("glow"), 120);
+    vibrate(60);
+
+    setTimeout(() => {
+      yesBtn.classList.remove("glow");
+    }, 120);
 
     setTimeout(() => {
       yesBtn.classList.add("glow");
+      vibrate(40);
     }, 180);
 
-    setTimeout(() => yesBtn.classList.remove("glow"), 300);
+    setTimeout(() => {
+      yesBtn.classList.remove("glow");
+    }, 300);
   }
 
   setInterval(heartbeat, 1200);
 
-  /* 🧲 Move NO + grow YES */
-  function moveNoButton() {
+  // ❌ NO runs ONLY when clicked
+  noBtn.addEventListener("click", () => {
+    noClicks++;
+
     const maxX = buttons.clientWidth - noBtn.offsetWidth;
     const maxY = buttons.clientHeight - noBtn.offsetHeight;
 
-    noBtn.style.left = Math.random() * maxX + "px";
-    noBtn.style.top = Math.random() * maxY + "px";
+    const x = Math.random() * maxX;
+    const y = Math.random() * maxY;
 
-    yesScale += 0.08;
-    yesBtn.style.transform = `translateX(-50%) scale(${yesScale})`;
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
 
-    msg.textContent = messages[count % messages.length];
-    count++;
-  }
-
-  /* Magnetic repulsion tuned for mouse */
-  function repelNo(e) {
-    const y = yesBtn.getBoundingClientRect();
-    const n = noBtn.getBoundingClientRect();
-
-    const dx = (n.left + n.width/2) - (y.left + y.width/2);
-    const dy = (n.top + n.height/2) - (y.top + y.height/2);
-    const dist = Math.sqrt(dx*dx + dy*dy);
-
-    if (dist < 180) moveNoButton();
-  }
-
-  noBtn.addEventListener("mouseenter", moveNoButton);
-  document.addEventListener("mousemove", repelNo);
-
-  yesBtn.addEventListener("click", () => {
-    music.play();
-
-    for (let i = 0; i < 12; i++) {
-      const fw = document.createElement("div");
-      fw.className = "firework";
-      fw.style.left = Math.random() * 100 + "vw";
-      fw.style.top = Math.random() * 60 + "vh";
-      fw.style.boxShadow = `
-        0 -30px #ff4d6d,
-        30px 0 #ffd166,
-        -30px 0 #06d6a0,
-        0 30px #118ab2,
-        22px 22px #ef476f,
-        -22px -22px #ff9a9e
-      `;
-      document.body.appendChild(fw);
-      setTimeout(() => fw.remove(), 1000);
-    }
-
-    setTimeout(() => {
-      document.body.innerHTML = `
-        <div style="
-          height:100vh;
-          display:flex;
-          flex-direction:column;
-          align-items:center;
-          justify-content:center;
-          text-align:center;
-          font-family:'Comic Sans MS', cursive;
-          background:linear-gradient(135deg,#ff9a9e,#fad0c4);
-        ">
-          <h1 style="color:#ff4d6d;">I LOVE YOU SOOOOO MUCH 💍💖</h1>
-          <p style="font-size:22px;">SORRY I WON'T BE THERE THIS TIME 😘</p>
-          <p style="font-size:40px;">I'LL MAKE UP FOR IT OK? 🎆🥰💘</p>
-        </div>
-      `;
-    }, 800);
+    // 😈 YES grows ONLY when NO is clicked
+    yesScale += 0.12;
+    yesBtn.style.setProperty("--scale", yesScale);
   });
 
-  document.body.addEventListener("click", () => {
-    if (!musicStarted) {
-      music.play().catch(()=>{});
-      musicStarted = true;
-    }
+  // 💍 YES click proposal
+  yesBtn.addEventListener("click", () => {
+    vibrate([100, 50, 100, 50, 200]);
+
+    document.body.innerHTML = `
+      <div style="
+        height:100vh;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        flex-direction:column;
+        background:radial-gradient(circle,#ff758c,#ff7eb3);
+        color:white;
+        text-align:center;
+        font-family:'Segoe UI',sans-serif;">
+        <h1>💖 SHE SAID YES 💖</h1>
+        <p style="font-size:20px;">Best decision ever 😌<br>
+        Happy Valentine’s Day 💐</p>
+      </div>
+    `;
   });
 </script>
 
