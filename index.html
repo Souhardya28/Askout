@@ -1,9 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Be My Valentine 💖</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: 'Comic Sans MS', cursive;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      background: white;
+      padding: 30px 20px;
+      border-radius: 20px;
+      text-align: center;
+      width: 90%;
+      max-width: 350px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
+
+    h1 { color: #ff4d6d; }
+
+    .buttons {
+      margin-top: 25px;
+      position: relative;
+      height: 160px;
+    }
+
+    button {
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      position: absolute;
+      font-size: 16px;
+    }
+
+    /* YES button */
+    #yes {
+      padding: 14px 30px;
+      background: #ff4d6d;
+      color: white;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%) scale(1);
+      transition: transform 0.25s ease;
+      --scale: 1;
+    }
+
+    /* Glow pulse synced from JS */
+    #yes.glow {
+      box-shadow:
+        0 0 15px #ff4d6d,
+        0 0 30px #ff4d6d,
+        0 0 50px #ff99aa;
+    }
+
+    /* NO button */
+    #no {
+      width: 90px;
+      height: 44px;
+      background: #ddd;
+      right: 20px;
+      bottom: 20px;
+      line-height: 44px;
+      padding: 0;
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+
+    /* Firework particles */
+    .firework {
+      position: fixed;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      animation: explode 1s ease-out forwards;
+    }
+
+    @keyframes explode {
+      from { transform: scale(0); opacity: 1; }
+      to { transform: scale(1.8); opacity: 0; }
+    }
+  </style>
+</head>
+
+<body>
+
+<audio id="music" loop>
+  <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mpeg">
+</audio>
+
+<div class="card">
+  <h1>Hey Sanchita 💕</h1>
+  <p>Will you be my Valentine? 💘</p>
+
+  <div class="buttons">
+    <button id="yes">Yes 💖</button>
+    <button id="no">No 😢</button>
+  </div>
+
+  <div class="message" id="message"></div>
+</div>
+
 <script>
   const noBtn = document.getElementById("no");
   const yesBtn = document.getElementById("yes");
   const msg = document.getElementById("message");
-  const music = document.getElementById("music");
   const buttons = document.querySelector(".buttons");
+  const music = document.getElementById("music");
 
   const messages = [
     "Are you sure? 🥺",
@@ -11,49 +129,45 @@
     "My heart 💔",
     "Nice try 😏",
     "You can’t escape 😈",
-    "JUST SAY YES 😤",
-    "NO is scared now 😵"
+    "JUST SAY YES 😤"
   ];
 
   let count = 0;
   let yesScale = 1;
   let musicStarted = false;
 
-  /* 📱 VIBRATION */
+  /* 📱 vibration helper */
   function vibrate(pattern) {
     if (navigator.vibrate) navigator.vibrate(pattern);
   }
 
-  /* 💓 HEARTBEAT synced to YES glow */
-  setInterval(() => {
-    vibrate([40, 60, 40]);
-  }, 1500);
+  /* 💓 PERFECT heartbeat sync */
+  function heartbeat() {
+    // lub
+    yesBtn.classList.add("glow");
+    vibrate(60);
+    setTimeout(() => yesBtn.classList.remove("glow"), 120);
 
-  /* 🧲 MAGNETIC PUSH AWAY */
-  function repelNo() {
-    const yesRect = yesBtn.getBoundingClientRect();
-    const noRect = noBtn.getBoundingClientRect();
+    // dub
+    setTimeout(() => {
+      yesBtn.classList.add("glow");
+      vibrate(40);
+    }, 180);
 
-    const dx = noRect.left - yesRect.left;
-    const dy = noRect.top - yesRect.top;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-
-    if (distance < 120) {
-      moveNoButton();
-    }
+    setTimeout(() => yesBtn.classList.remove("glow"), 300);
   }
 
+  setInterval(heartbeat, 1200);
+
+  /* 🧲 Move NO away + grow YES */
   function moveNoButton() {
     vibrate([30, 20, 30]);
 
     const maxX = buttons.clientWidth - noBtn.offsetWidth;
     const maxY = buttons.clientHeight - noBtn.offsetHeight;
 
-    const x = Math.random() * maxX;
-    const y = Math.random() * maxY;
-
-    noBtn.style.left = x + "px";
-    noBtn.style.top = y + "px";
+    noBtn.style.left = Math.random() * maxX + "px";
+    noBtn.style.top = Math.random() * maxY + "px";
 
     yesScale += 0.1;
     yesBtn.style.transform = `translateX(-50%) scale(${yesScale})`;
@@ -62,25 +176,33 @@
     count++;
   }
 
+  /* 🧲 Magnetic repulsion */
+  function repelNo() {
+    const y = yesBtn.getBoundingClientRect();
+    const n = noBtn.getBoundingClientRect();
+
+    const dx = n.left - y.left;
+    const dy = n.top - y.top;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+
+    if (dist < 120) moveNoButton();
+  }
+
   noBtn.addEventListener("mouseover", moveNoButton);
   noBtn.addEventListener("touchstart", moveNoButton);
   document.addEventListener("mousemove", repelNo);
   document.addEventListener("touchmove", repelNo);
 
-  /* 🎆 FIREWORKS */
+  /* 🎆 Fireworks */
   function launchFireworks() {
     vibrate([100, 50, 100, 50, 200]);
 
-    for (let i = 0; i < 10; i++) {
-      const firework = document.createElement("div");
-      firework.style.position = "fixed";
-      firework.style.left = Math.random() * 100 + "vw";
-      firework.style.top = Math.random() * 60 + "vh";
-      firework.style.width = "6px";
-      firework.style.height = "6px";
-      firework.style.borderRadius = "50%";
-      firework.style.background = "transparent";
-      firework.style.boxShadow = `
+    for (let i = 0; i < 12; i++) {
+      const fw = document.createElement("div");
+      fw.className = "firework";
+      fw.style.left = Math.random() * 100 + "vw";
+      fw.style.top = Math.random() * 60 + "vh";
+      fw.style.boxShadow = `
         0 -30px #ff4d6d,
         30px 0 #ffd166,
         -30px 0 #06d6a0,
@@ -88,25 +210,12 @@
         22px 22px #ef476f,
         -22px -22px #ff9a9e
       `;
-      firework.style.animation = "explode 1s ease-out forwards";
-      document.body.appendChild(firework);
-
-      setTimeout(() => firework.remove(), 1000);
+      document.body.appendChild(fw);
+      setTimeout(() => fw.remove(), 1000);
     }
   }
 
-  /* 🔥 FIREWORK animation */
-  const style = document.createElement("style");
-  style.innerHTML = `
-    @keyframes explode {
-      from { transform: scale(0); opacity: 1; }
-      to { transform: scale(1.5); opacity: 0; }
-    }
-  `;
-  document.head.appendChild(style);
-
   yesBtn.addEventListener("click", () => {
-    vibrate([200, 100, 200, 100, 300]);
     music.play();
     launchFireworks();
 
@@ -124,7 +233,7 @@
         ">
           <h1 style="color:#ff4d6d;">SHE SAID YES 💍💖</h1>
           <p style="font-size:22px;">Best Valentine ever 😘</p>
-          <p style="font-size:40px;">🥰🎆💘</p>
+          <p style="font-size:40px;">🎆🥰💘</p>
         </div>
       `;
     }, 800);
@@ -137,3 +246,6 @@
     }
   });
 </script>
+
+</body>
+</html>
