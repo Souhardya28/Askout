@@ -1,141 +1,261 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Be My Valentine 💖</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Be My Valentine 💖</title>
 
-<style>
-  body {
-    margin: 0;
-    height: 100vh;
-    font-family: 'Comic Sans MS', cursive;
-    background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
+  <style>
+    * { box-sizing: border-box; }
 
-  .card {
-    background: white;
-    padding: 30px 25px;
-    border-radius: 20px;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    width: 90%;
-    max-width: 350px;
-  }
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: 'Comic Sans MS', cursive;
+      background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-  h1 {
-    color: #ff4d6d;
-  }
+    .card {
+      background: white;
+      padding: 30px 20px;
+      border-radius: 20px;
+      text-align: center;
+      width: 90%;
+      max-width: 350px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
 
-  .buttons {
-    margin-top: 25px;
-    position: relative;
-    height: 120px;
-  }
+    h1 { color: #ff4d6d; }
 
-  button {
-    border: none;
-    border-radius: 30px;
-    padding: 12px 25px;
-    font-size: 16px;
-    cursor: pointer;
-    position: absolute;
-  }
+    .buttons {
+      margin-top: 25px;
+      position: relative;
+      height: 160px;
+    }
 
-  #yes {
-    background: #ff4d6d;
-    color: white;
-    left: 30px;
-    bottom: 10px;
-  }
+    button {
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      position: absolute;
+      font-size: 16px;
+    }
 
-  #no {
-    background: #ddd;
-    right: 30px;
-    bottom: 10px;
-  }
+    /* YES button */
+    #yes {
+      padding: 14px 30px;
+      background: #ff4d6d;
+      color: white;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%) scale(1);
+      transition: transform 0.3s ease;
+      animation: glow 1.5s infinite alternate;
+    }
 
-  .message {
-    margin-top: 15px;
-    font-size: 18px;
-  }
-</style>
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 10px #ff4d6d;
+      }
+      to {
+        box-shadow: 0 0 25px #ff4d6d, 0 0 40px #ff99aa;
+      }
+    }
+
+    /* NO button – fixed size */
+    #no {
+      width: 90px;
+      height: 44px;
+      background: #ddd;
+      right: 20px;
+      bottom: 20px;
+      line-height: 44px;
+      padding: 0;
+      transition: transform 0.1s;
+    }
+
+    /* Shake animation */
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      50% { transform: translateX(4px); }
+      75% { transform: translateX(-4px); }
+      100% { transform: translateX(0); }
+    }
+
+    .shake {
+      animation: shake 0.3s;
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+
+    .heart {
+      position: fixed;
+      bottom: -20px;
+      font-size: 24px;
+      animation: floatUp 6s linear infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes floatUp {
+      from { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(-110vh); opacity: 0; }
+    }
+
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      top: -10px;
+      animation: fall 3s linear forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="card">
-  <h1>Hey my favorite human 💕</h1>
-  <p>Will you be my Valentine? 💘</p>
+  <audio id="music" loop>
+    <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mpeg">
+  </audio>
 
-  <div class="buttons">
-    <button id="yes">Yes 💖</button>
-    <button id="no">No 😢</button>
+  <div class="card">
+    <h1>Hey Sanchita 💕</h1>
+    <p>Will you be my Valentine? 💘</p>
+
+    <div class="buttons">
+      <button id="yes">Yes 💖</button>
+      <button id="no">No 😢</button>
+    </div>
+
+    <div class="message" id="message"></div>
   </div>
 
-  <div class="message" id="message"></div>
-</div>
+  <script>
+    const noBtn = document.getElementById("no");
+    const yesBtn = document.getElementById("yes");
+    const msg = document.getElementById("message");
+    const music = document.getElementById("music");
+    const buttons = document.querySelector(".buttons");
 
-<script>
-  const noBtn = document.getElementById("no");
-  const yesBtn = document.getElementById("yes");
-  const msg = document.getElementById("message");
-  const container = document.querySelector(".buttons");
+    const messages = [
+      "Are you sure? 🥺",
+      "Heyyy stop 😭",
+      "My heart 💔",
+      "Change your mind now 😠",
+      "You can’t escape 😈",
+      "Last chance 😬",
+      "Too late 💀"
+    ];
 
-  const messages = [
-    "Hey 😐",
-    "Wait what 😳",
-    "EXCUSE ME?? 😤",
-    "Nice try 😂",
-    "You thought 💀",
-    "Just press YES already 😍"
-  ];
+    let count = 0;
+    let yesScale = 1;
+    let musicStarted = false;
 
-  let count = 0;
+    function moveNoButton() {
+      if (count >= 7) {
+        noBtn.remove();
+        msg.textContent = "NO is gone 😈 Only YES remains 💖";
+        return;
+      }
 
-  function moveNo() {
-    const maxX = container.clientWidth - noBtn.offsetWidth;
-    const maxY = container.clientHeight - noBtn.offsetHeight;
+      const maxX = buttons.clientWidth - noBtn.offsetWidth;
+      const maxY = buttons.clientHeight - noBtn.offsetHeight;
 
-    const x = Math.random() * maxX;
-    const y = Math.random() * maxY;
+      let x = Math.random() * maxX;
+      let y = Math.random() * maxY;
 
-    noBtn.style.left = x + "px";
-    noBtn.style.top = y + "px";
+      // Corner detection
+      if (
+        x < 10 || x > maxX - 10 ||
+        y < 10 || y > maxY - 10
+      ) {
+        noBtn.classList.add("shake");
+        setTimeout(() => noBtn.classList.remove("shake"), 300);
+      }
 
-    msg.textContent = messages[count % messages.length];
-    count++;
-  }
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
 
-  // NO can NEVER be clicked
-  noBtn.addEventListener("mouseover", moveNo);
-  noBtn.addEventListener("touchstart", moveNo);
-  noBtn.addEventListener("click", moveNo);
+      // YES grows & stays centered
+      yesScale += 0.15;
+      yesBtn.style.transform = `translateX(-50%) scale(${yesScale})`;
 
-  yesBtn.addEventListener("click", () => {
-    document.body.innerHTML = `
-      <div style="
-        height:100vh;
-        display:flex;
-        flex-direction:column;
-        align-items:center;
-        justify-content:center;
-        text-align:center;
-        font-family:'Comic Sans MS', cursive;
-        background:linear-gradient(135deg,#ff9a9e,#fad0c4);
-      ">
-        <h1 style="color:#ff4d6d;">YAYYYY 💖💖💖</h1>
-        <p style="font-size:22px;">Best decision ever 😌</p>
-        <p style="font-size:20px;">Happy Valentine’s Day 💕</p>
-        <p style="font-size:40px;">🥰💘😍</p>
-      </div>
-    `;
-  });
-</script>
+      msg.textContent = messages[count];
+      count++;
+    }
+
+    noBtn.addEventListener("mouseover", moveNoButton);
+    noBtn.addEventListener("touchstart", moveNoButton);
+
+    function launchConfetti() {
+      for (let i = 0; i < 120; i++) {
+        const confetti = document.createElement("div");
+        confetti.className = "confetti";
+        confetti.style.left = Math.random() * 100 + "vw";
+        confetti.style.backgroundColor =
+          ["#ff4d6d", "#ffd166", "#06d6a0", "#118ab2", "#ef476f"]
+          [Math.floor(Math.random() * 5)];
+        confetti.style.animationDuration = (2 + Math.random() * 2) + "s";
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 4000);
+      }
+    }
+
+    yesBtn.addEventListener("click", () => {
+      music.play();
+      launchConfetti();
+      setTimeout(() => {
+        document.body.innerHTML = `
+          <div style="
+            height:100vh;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            text-align:center;
+            font-family:'Comic Sans MS', cursive;
+            background:linear-gradient(135deg,#ff9a9e,#fad0c4);
+          ">
+            <h1 style="color:#ff4d6d;">YAYYYY 💖💖💖</h1>
+            <p style="font-size:22px;">I knew you'd say YES 😘</p>
+            <p style="font-size:20px;">Happy Valentine’s Day 💕</p>
+            <p style="font-size:40px;">🥰💘😍</p>
+          </div>
+        `;
+      }, 800);
+    });
+
+    document.body.addEventListener("click", () => {
+      if (!musicStarted) {
+        music.play();
+        musicStarted = true;
+      }
+    });
+
+    setInterval(() => {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.innerHTML = "💖";
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.animationDuration = (4 + Math.random() * 3) + "s";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 7000);
+    }, 500);
+  </script>
 
 </body>
 </html>
