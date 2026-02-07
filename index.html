@@ -35,30 +35,61 @@
     .buttons {
       margin-top: 25px;
       position: relative;
-      height: 120px;
+      height: 160px;
     }
 
     button {
-      padding: 12px 25px;
-      font-size: 16px;
       border: none;
       border-radius: 30px;
       cursor: pointer;
       position: absolute;
+      font-size: 16px;
     }
 
+    /* YES button */
     #yes {
+      padding: 14px 30px;
       background: #ff4d6d;
       color: white;
-      left: 20px;
-      bottom: 10px;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%) scale(1);
       transition: transform 0.3s ease;
+      animation: glow 1.5s infinite alternate;
     }
 
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 10px #ff4d6d;
+      }
+      to {
+        box-shadow: 0 0 25px #ff4d6d, 0 0 40px #ff99aa;
+      }
+    }
+
+    /* NO button – fixed size */
     #no {
+      width: 90px;
+      height: 44px;
       background: #ddd;
       right: 20px;
-      bottom: 10px;
+      bottom: 20px;
+      line-height: 44px;
+      padding: 0;
+      transition: transform 0.1s;
+    }
+
+    /* Shake animation */
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      50% { transform: translateX(4px); }
+      75% { transform: translateX(-4px); }
+      100% { transform: translateX(0); }
+    }
+
+    .shake {
+      animation: shake 0.3s;
     }
 
     .message {
@@ -126,7 +157,8 @@
       "My heart 💔",
       "Change your mind now 😠",
       "You can’t escape 😈",
-      "Just say YES already 🥰"
+      "Last chance 😬",
+      "Too late 💀"
     ];
 
     let count = 0;
@@ -134,20 +166,35 @@
     let musicStarted = false;
 
     function moveNoButton() {
+      if (count >= 7) {
+        noBtn.remove();
+        msg.textContent = "NO is gone 😈 Only YES remains 💖";
+        return;
+      }
+
       const maxX = buttons.clientWidth - noBtn.offsetWidth;
       const maxY = buttons.clientHeight - noBtn.offsetHeight;
 
-      const x = Math.random() * maxX;
-      const y = Math.random() * maxY;
+      let x = Math.random() * maxX;
+      let y = Math.random() * maxY;
+
+      // Corner detection
+      if (
+        x < 10 || x > maxX - 10 ||
+        y < 10 || y > maxY - 10
+      ) {
+        noBtn.classList.add("shake");
+        setTimeout(() => noBtn.classList.remove("shake"), 300);
+      }
 
       noBtn.style.left = x + "px";
       noBtn.style.top = y + "px";
 
-      // 💖 GROW YES BUTTON
+      // YES grows & stays centered
       yesScale += 0.15;
-      yesBtn.style.transform = `scale(${yesScale})`;
+      yesBtn.style.transform = `translateX(-50%) scale(${yesScale})`;
 
-      msg.innerHTML = messages[count % messages.length];
+      msg.textContent = messages[count];
       count++;
     }
 
@@ -212,4 +259,3 @@
 
 </body>
 </html>
-
