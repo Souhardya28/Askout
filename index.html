@@ -52,6 +52,7 @@
       color: white;
       left: 20px;
       bottom: 10px;
+      transition: transform 0.3s ease;
     }
 
     #no {
@@ -129,6 +130,7 @@
     ];
 
     let count = 0;
+    let yesScale = 1;
     let musicStarted = false;
 
     function moveNoButton() {
@@ -141,11 +143,14 @@
       noBtn.style.left = x + "px";
       noBtn.style.top = y + "px";
 
+      // 💖 GROW YES BUTTON
+      yesScale += 0.15;
+      yesBtn.style.transform = `scale(${yesScale})`;
+
       msg.innerHTML = messages[count % messages.length];
       count++;
     }
 
-    // Runs away ONLY when touched / hovered
     noBtn.addEventListener("mouseover", moveNoButton);
     noBtn.addEventListener("touchstart", moveNoButton);
 
@@ -207,3 +212,4 @@
 
 </body>
 </html>
+
