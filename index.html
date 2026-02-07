@@ -45,13 +45,13 @@ body {
 /* Moon */
 #moon {
   position: fixed;
-  bottom: -120px;
+  bottom: -140px;
   right: 10%;
-  width: 140px;
-  height: 140px;
+  width: 150px;
+  height: 150px;
   background: radial-gradient(circle at 30% 30%, #fff, #ddd);
   border-radius: 50%;
-  box-shadow: 0 0 40px rgba(255,255,255,.4);
+  box-shadow: 0 0 50px rgba(255,255,255,.4);
   transition: bottom 6s ease;
   z-index: 1;
 }
@@ -97,7 +97,7 @@ button {
 #yes.glow {
   box-shadow:
     0 0 25px #ff4d6d,
-    0 0 60px #ff99aa;
+    0 0 70px #ff99aa;
 }
 
 /* NO */
@@ -115,6 +115,35 @@ canvas {
   inset: 0;
   pointer-events: none;
   z-index: 2;
+}
+
+/* YES MESSAGE OVERLAY */
+#yesMessage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,.35);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s ease;
+  z-index: 10;
+}
+
+#yesMessage.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#yesMessage h2 {
+  font-size: 34px;
+  margin-bottom: 10px;
+}
+
+#yesMessage p {
+  font-size: 22px;
 }
 </style>
 </head>
@@ -141,6 +170,14 @@ canvas {
   </div>
 </div>
 
+<!-- YES MESSAGE -->
+<div id="yesMessage">
+  <div style="text-align:center;">
+    <h2>🌙 SHE SAID YES 🌙</h2>
+    <p>Sanchita, under the stars — you’re my Valentine 💖✨</p>
+  </div>
+</div>
+
 <script>
 /* Stars */
 for(let i=0;i<120;i++){
@@ -157,6 +194,7 @@ const no=document.getElementById("no");
 const buttons=document.getElementById("buttons");
 const moon=document.getElementById("moon");
 const music=document.getElementById("music");
+const yesMsg=document.getElementById("yesMessage");
 
 let scale=1, musicStarted=false;
 
@@ -176,7 +214,7 @@ function beat(freq,dur){
   o.start(); o.stop(ctx.currentTime+dur/1000);
 }
 
-/* Sync heartbeat */
+/* Heartbeat sync */
 setInterval(()=>{
   yes.classList.add("glow");
   vibrate(60); beat(90,120);
@@ -206,7 +244,7 @@ no.onclick=()=>{
   yes.style.setProperty("--scale",scale);
 };
 
-/* Canvas FX */
+/* Canvas */
 const c=document.getElementById("fx");
 const x=c.getContext("2d");
 c.width=innerWidth; c.height=innerHeight;
@@ -243,25 +281,17 @@ function shootingStar(){
   },16);
 }
 
-/* YES click */
+/* YES CLICK */
 yes.onclick=()=>{
   vibrate([100,50,100,50,200]);
-  moon.style.bottom="10%";
+  moon.style.bottom="12%";
+  yesMsg.classList.add("show");
 
   for(let i=0;i<6;i++)
     setTimeout(()=>firework(Math.random()*innerWidth,Math.random()*innerHeight*.6),i*300);
 
   for(let i=0;i<4;i++)
     setTimeout(shootingStar,i*400);
-
-  setTimeout(()=>{
-    document.body.innerHTML=`
-      <div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
-      background:radial-gradient(circle,#1b1f4b,#050716);color:white;text-align:center;">
-        <h1>🌙 SHE SAID YES 🌙</h1>
-        <p style="font-size:22px;">Sanchita, under the stars — you’re my Valentine 💖✨</p>
-      </div>`;
-  },1400);
 };
 
 /* Music start */
