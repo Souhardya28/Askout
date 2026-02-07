@@ -1,88 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Valentine's Proposal 💘</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Sanchita 🌙 Valentine</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      background: radial-gradient(circle, #ffafbd, #ffc3a0);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Segoe UI', sans-serif;
-      overflow: hidden;
-    }
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', sans-serif;
+    background: radial-gradient(circle at bottom, #0b1026, #02040f);
+    animation: candleFlicker 6s infinite;
+    color: white;
+  }
 
-    .card {
-      background: white;
-      padding: 30px 25px;
-      border-radius: 20px;
-      text-align: center;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-      width: 90%;
-      max-width: 350px;
-    }
+  /* 🕯 Candlelight flicker */
+  @keyframes candleFlicker {
+    0% { filter: brightness(1); }
+    30% { filter: brightness(0.96); }
+    60% { filter: brightness(1.04); }
+    100% { filter: brightness(1); }
+  }
 
-    h1 {
-      color: #ff4d6d;
-      margin-bottom: 10px;
-    }
+  /* ⭐ Stars */
+  .star {
+    position: fixed;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+    animation: twinkle 3s infinite ease-in-out;
+  }
 
-    p {
-      margin-bottom: 25px;
-      font-size: 16px;
-    }
+  @keyframes twinkle {
+    0%,100% { opacity: 0.2; }
+    50% { opacity: 1; }
+  }
 
-    .buttons {
-      position: relative;
-      height: 120px;
-    }
+  .card {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+    padding: 36px 30px;
+    border-radius: 22px;
+    text-align: center;
+    width: 90%;
+    max-width: 380px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    z-index: 5;
+  }
 
-    button {
-      padding: 14px 28px;
-      font-size: 18px;
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      position: absolute;
-    }
+  h1 {
+    color: #ff6b81;
+    margin-bottom: 12px;
+  }
 
-    #yes {
-      left: 50%;
-      transform: translateX(-50%);
-      background: #ff4d6d;
-      color: white;
-      --scale: 1;
-    }
+  p {
+    font-size: 16px;
+    margin-bottom: 25px;
+  }
 
-    #yes.glow {
-      box-shadow:
-        0 0 15px #ff4d6d,
-        0 0 30px #ff4d6d,
-        0 0 50px #ff99aa;
-      transform: translateX(-50%) scale(var(--scale));
-    }
+  .buttons {
+    position: relative;
+    height: 150px;
+  }
 
-    #no {
-      background: #ccc;
-      color: #333;
-      top: 60px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-  </style>
+  button {
+    padding: 15px 36px;
+    font-size: 18px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    position: absolute;
+  }
+
+  #yes {
+    left: 50%;
+    transform: translateX(-50%) scale(var(--scale));
+    background: #ff4d6d;
+    color: white;
+    --scale: 1;
+  }
+
+  #yes.glow {
+    box-shadow:
+      0 0 20px #ff4d6d,
+      0 0 45px #ff4d6d,
+      0 0 90px #ff99aa;
+  }
+
+  #no {
+    background: #999;
+    color: #111;
+    top: 85px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+</style>
 </head>
 
 <body>
 
+<!-- 🎶 Romantic background music -->
+<audio id="bgMusic" loop>
+  <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mpeg">
+</audio>
+
+<canvas id="fireworks"></canvas>
+
 <div class="card">
-  <h1>Hey ❤️</h1>
-  <p>Will you be my Valentine? 💐<br>
-     (Think very carefully 😈)</p>
+  <h1>Sanchita 🌙💖</h1>
+  <p>
+    Under the stars tonight… ✨<br>
+    Will you be my Valentine? 😏
+  </p>
 
   <div class="buttons" id="buttons">
     <button id="yes">YES 💖</button>
@@ -91,80 +134,139 @@
 </div>
 
 <script>
-  const yesBtn = document.getElementById("yes");
-  const noBtn = document.getElementById("no");
-  const buttons = document.getElementById("buttons");
+/* ⭐ Generate stars */
+for (let i = 0; i < 120; i++) {
+  const star = document.createElement("div");
+  star.className = "star";
+  star.style.left = Math.random() * 100 + "vw";
+  star.style.top = Math.random() * 100 + "vh";
+  star.style.animationDelay = Math.random() * 3 + "s";
+  document.body.appendChild(star);
+}
 
-  let yesScale = 1;
-  let noClicks = 0;
+/* ELEMENTS */
+const yesBtn = document.getElementById("yes");
+const noBtn = document.getElementById("no");
+const buttons = document.getElementById("buttons");
+const music = document.getElementById("bgMusic");
 
-  // 📱 Safe vibration helper
-  function vibrate(ms) {
-    if (navigator.vibrate) {
-      navigator.vibrate(ms);
-    }
-  }
+/* STATE */
+let yesScale = 1;
+let audioCtx;
+let musicStarted = false;
 
-  // 💓 Heartbeat synced EXACTLY with glow
-  function heartbeat() {
+/* 📱 VIBRATION */
+function vibrate(p) {
+  if (navigator.vibrate) navigator.vibrate(p);
+}
+
+/* 🔊 HEARTBEAT SOUND */
+function heartbeatSound(freq, duration) {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  osc.frequency.value = freq;
+  osc.type = "sine";
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration/1000);
+
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration/1000);
+}
+
+/* 💓 HEARTBEAT SYNC */
+function heartbeat() {
+  yesBtn.classList.add("glow");
+  vibrate(60);
+  heartbeatSound(90,120);
+  setTimeout(()=>yesBtn.classList.remove("glow"),120);
+
+  setTimeout(()=>{
     yesBtn.classList.add("glow");
-    vibrate(60);
+    vibrate(40);
+    heartbeatSound(110,100);
+  },180);
 
-    setTimeout(() => {
-      yesBtn.classList.remove("glow");
-    }, 120);
+  setTimeout(()=>yesBtn.classList.remove("glow"),300);
+}
 
-    setTimeout(() => {
-      yesBtn.classList.add("glow");
-      vibrate(40);
-    }, 180);
+setInterval(heartbeat, 1200);
 
-    setTimeout(() => {
-      yesBtn.classList.remove("glow");
-    }, 300);
+/* 🧲 MAGNETIC NO */
+function magnet() {
+  const y = yesBtn.getBoundingClientRect();
+  const n = noBtn.getBoundingClientRect();
+  const dx = n.left - y.left;
+  const dy = n.top - y.top;
+  const dist = Math.hypot(dx,dy);
+
+  if (dist < 150) {
+    noBtn.style.left = Math.random() * (buttons.clientWidth - noBtn.offsetWidth) + "px";
+    noBtn.style.top = Math.random() * (buttons.clientHeight - noBtn.offsetHeight) + "px";
+  }
+}
+
+setInterval(magnet, 220);
+
+/* ❌ NO click only */
+noBtn.addEventListener("click", () => {
+  noBtn.style.left = Math.random() * (buttons.clientWidth - noBtn.offsetWidth) + "px";
+  noBtn.style.top = Math.random() * (buttons.clientHeight - noBtn.offsetHeight) + "px";
+  yesScale += 0.12;
+  yesBtn.style.setProperty("--scale", yesScale);
+});
+
+/* 🎆 FIREWORKS */
+const canvas = document.getElementById("fireworks");
+const ctx = canvas.getContext("2d");
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+function firework(x,y){
+  for(let i=0;i<80;i++){
+    let a=Math.random()*Math.PI*2;
+    let s=Math.random()*5+2;
+    let px=x,py=y,l=60;
+    let vx=Math.cos(a)*s,vy=Math.sin(a)*s;
+    let t=setInterval(()=>{
+      ctx.fillStyle=`rgba(255,77,109,${l/60})`;
+      ctx.fillRect(px,py,3,3);
+      px+=vx; py+=vy; l--;
+      if(l<=0) clearInterval(t);
+    },16);
+  }
+}
+
+/* 💖 YES CLICK */
+yesBtn.addEventListener("click",()=>{
+  vibrate([100,50,100,50,200]);
+  for(let i=0;i<6;i++){
+    setTimeout(()=>firework(Math.random()*innerWidth,Math.random()*innerHeight*0.6),i*300);
   }
 
-  setInterval(heartbeat, 1200);
+  setTimeout(()=>{
+    document.body.innerHTML=`
+      <div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      background:radial-gradient(circle,#1b1f4b,#050716);color:white;text-align:center;">
+        <h1>🌙 SHE SAID YES 🌙</h1>
+        <p style="font-size:22px;">
+          Sanchita, under the stars — you’re my Valentine 💖✨
+        </p>
+      </div>`;
+  },1200);
+});
 
-  // ❌ NO runs ONLY when clicked
-  noBtn.addEventListener("click", () => {
-    noClicks++;
-
-    const maxX = buttons.clientWidth - noBtn.offsetWidth;
-    const maxY = buttons.clientHeight - noBtn.offsetHeight;
-
-    const x = Math.random() * maxX;
-    const y = Math.random() * maxY;
-
-    noBtn.style.left = x + "px";
-    noBtn.style.top = y + "px";
-
-    // 😈 YES grows ONLY when NO is clicked
-    yesScale += 0.12;
-    yesBtn.style.setProperty("--scale", yesScale);
-  });
-
-  // 💍 YES click proposal
-  yesBtn.addEventListener("click", () => {
-    vibrate([100, 50, 100, 50, 200]);
-
-    document.body.innerHTML = `
-      <div style="
-        height:100vh;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        flex-direction:column;
-        background:radial-gradient(circle,#ff758c,#ff7eb3);
-        color:white;
-        text-align:center;
-        font-family:'Segoe UI',sans-serif;">
-        <h1>💖 SHE SAID YES 💖</h1>
-        <p style="font-size:20px;">Best decision ever 😌<br>
-        Happy Valentine’s Day 💐</p>
-      </div>
-    `;
-  });
+/* 🎶 Start music on interaction */
+document.body.addEventListener("click",()=>{
+  if(!musicStarted){
+    music.play();
+    musicStarted=true;
+  }
+});
 </script>
 
 </body>
